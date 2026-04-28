@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My TV Cinema</title>
+    <title>My Private TV</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
-        h1 { color: #ff0000; margin-top: 20px; font-size: 2rem; }
-        .grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 40px; }
         
-        /* Optimized for TV Remote Selection */
-        .card { 
-            border: 4px solid #333; 
+        .movie-card { 
+            border: 4px solid #444; 
             margin: 15px; 
             padding: 50px 20px; 
-            width: 220px; 
-            background: #1a1a1a;
+            width: 200px; 
+            background: #222;
             cursor: pointer;
             border-radius: 15px;
             color: white;
             font-size: 1.5rem;
-            font-weight: bold;
         }
-        .card:focus, .card:hover { 
-            border-color: #ff0000; 
-            background: #444; 
+        .movie-card:focus, .movie-card:hover { 
+            border-color: #00ff00; 
+            background: #333; 
             outline: none;
-            transform: scale(1.1);
         }
 
-        #player-layer { 
+        #video-overlay { 
             display: none; 
             position: fixed; 
             top: 0; left: 0; 
@@ -35,58 +31,55 @@
             background: #000; 
             z-index: 100;
         }
-        iframe { width: 100%; height: 100%; border: none; }
+        video { width: 100%; height: 100%; background: #000; }
         
         .close-btn { 
             position: absolute; 
-            top: 15px; right: 15px; 
-            background: #ff0000; 
+            top: 20px; right: 20px; 
+            background: red; 
             color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            border-radius: 8px; 
+            padding: 10px 20px; 
+            border: none;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem;
             z-index: 101;
         }
     </style>
 </head>
 <body>
 
-    <div id="home-screen">
-        <h1>Movie Library</h1>
+    <div id="gallery">
+        <h1>Select a Movie</h1>
         <div class="grid">
-            <button class="card" onclick="play('17tCQAE6eeFs7esRpV-ul9lRujsg4bQfE')">MOVIE 1</button>
-            
-            <button class="card" onclick="play('1JxG9gDuumNOFFMf0-fSZAp8jpkknoBrH')">MOVIE 2</button>
-            
-            <button class="card" onclick="play('ID_3_HERE')">MOVIE 3</button>
-            
-            <button class="card" onclick="play('ID_4_HERE')">MOVIE 4</button>
+            <button class="movie-card" onclick="start('https://archive.org/details/soorarai-pottru-2020-hd')">Movie 1</button>
+            <button class="movie-card" onclick="start('URL_2')">Movie 2</button>
+            <button class="movie-card" onclick="start('URL_3')">Movie 3</button>
+            <button class="movie-card" onclick="start('URL_4')">Movie 4</button>
         </div>
     </div>
 
-    <div id="player-layer">
-        <button class="close-btn" onclick="stopVideo()">CLOSE [X]</button>
-        <iframe id="video-frame" src="" allow="autoplay; fullscreen"></iframe>
+    <div id="video-overlay">
+        <button class="close-btn" onclick="stop()">CLOSE [X]</button>
+        <video id="tv-player" controls autoplay>
+            <source id="video-src" src="" type="video/mp4">
+            Your TV browser is too old for this video.
+        </video>
     </div>
 
     <script>
-        function play(id) {
-            var player = document.getElementById('player-layer');
-            var iframe = document.getElementById('video-frame');
+        function start(link) {
+            var player = document.getElementById('tv-player');
+            var source = document.getElementById('video-src');
             
-            iframe.src = "https://drive.google.com/file/d/" + id + "/preview";
-            player.style.display = 'block';
+            source.src = link;
+            document.getElementById('video-overlay').style.display = 'block';
+            player.load();
+            player.play();
         }
 
-        function stopVideo() {
-            var player = document.getElementById('player-layer');
-            var iframe = document.getElementById('video-frame');
-            
-            iframe.src = ""; 
-            player.style.display = 'none';
+        function stop() {
+            var player = document.getElementById('tv-player');
+            player.pause();
+            document.getElementById('video-overlay').style.display = 'none';
         }
     </script>
 </body>
