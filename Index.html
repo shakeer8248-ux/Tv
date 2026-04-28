@@ -1,85 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Private TV</title>
+    <title>My TV Cinema</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
-        .grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 40px; }
+        h1 { color: #ff0000; margin-top: 20px; }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
         
-        .movie-card { 
-            border: 4px solid #444; 
-            margin: 15px; 
-            padding: 50px 20px; 
-            width: 200px; 
-            background: #222;
-            cursor: pointer;
-            border-radius: 15px;
-            color: white;
-            font-size: 1.5rem;
+        .card { 
+            border: 4px solid #333; margin: 15px; padding: 45px 20px; 
+            width: 220px; background: #1a1a1a; cursor: pointer;
+            border-radius: 15px; color: white; font-size: 1.3rem; font-weight: bold;
         }
-        .movie-card:focus, .movie-card:hover { 
-            border-color: #00ff00; 
-            background: #333; 
-            outline: none;
-        }
+        .card:focus, .card:hover { border-color: #ff0000; background: #333; outline: none; }
 
-        #video-overlay { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: #000; 
-            z-index: 100;
+        #video-player-container { 
+            display: none; position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; background: #000; z-index: 100;
         }
+        /* Native video tag is better for old Android */
         video { width: 100%; height: 100%; background: #000; }
         
         .close-btn { 
-            position: absolute; 
-            top: 20px; right: 20px; 
-            background: red; 
-            color: white; 
-            padding: 10px 20px; 
-            border: none;
-            cursor: pointer;
-            z-index: 101;
+            position: absolute; top: 15px; right: 15px; 
+            background: #ff0000; color: white; border: none; 
+            padding: 10px 20px; border-radius: 5px; z-index: 101;
         }
     </style>
 </head>
 <body>
 
-    <div id="gallery">
-        <h1>Select a Movie</h1>
+    <div id="home">
+        <h1>Movie Library</h1>
         <div class="grid">
-            <button class="movie-card" onclick="start('https://archive.org/details/soorarai-pottru-2020-hd')">Movie 1</button>
-            <button class="movie-card" onclick="start('URL_2')">Movie 2</button>
-            <button class="movie-card" onclick="start('URL_3')">Movie 3</button>
-            <button class="movie-card" onclick="start('URL_4')">Movie 4</button>
+            <button class="card" onclick="playNative('https://archive.org/details/soorarai-pottru-2020-hd')">MOVIE 1</button>
+            <button class="card" onclick="playNative('1JxG9gDuumNOFFMf0-fSZAp8jpkknoBrH')">MOVIE 2</button>
+            <button class="card" onclick="playNative('ID_3')">MOVIE 3</button>
+            <button class="card" onclick="playNative('ID_4')">MOVIE 4</button>
         </div>
     </div>
 
-    <div id="video-overlay">
-        <button class="close-btn" onclick="stop()">CLOSE [X]</button>
-        <video id="tv-player" controls autoplay>
-            <source id="video-src" src="" type="video/mp4">
-            Your TV browser is too old for this video.
+    <div id="video-player-container">
+        <button class="close-btn" onclick="stopNative()">[X] CLOSE</button>
+        <video id="tv-video" controls autoplay>
+            <source id="video-source" src="" type="video/mp4">
+            Your TV browser is too old.
         </video>
     </div>
 
     <script>
-        function start(link) {
-            var player = document.getElementById('tv-player');
-            var source = document.getElementById('video-src');
+        function playNative(id) {
+            var container = document.getElementById('video-player-container');
+            var video = document.getElementById('tv-video');
+            var source = document.getElementById('video-source');
             
-            source.src = link;
-            document.getElementById('video-overlay').style.display = 'block';
-            player.load();
-            player.play();
+            // Direct Link formula to bypass the Drive UI
+            // Note: If files are >100MB, you MUST be logged into Chrome on the TV
+            source.src = "https://drive.google.com/uc?export=download&id=" + id;
+            
+            container.style.display = 'block';
+            video.load();
+            video.play();
         }
 
-        function stop() {
-            var player = document.getElementById('tv-player');
-            player.pause();
-            document.getElementById('video-overlay').style.display = 'none';
+        function stopNative() {
+            var video = document.getElementById('tv-video');
+            video.pause();
+            document.getElementById('video-player-container').style.display = 'none';
         }
     </script>
 </body>
