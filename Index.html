@@ -1,72 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My TV Cinema</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudCinema | Online Player</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
-        h1 { color: #ff0000; margin-top: 20px; }
-        .grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+        :root { --accent: #00d4ff; --bg: #050505; --card-bg: #121212; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: var(--accent); font-size: 2.5rem; margin-bottom: 40px; }
         
-        .card { 
-            border: 4px solid #333; margin: 15px; padding: 45px 20px; 
-            width: 220px; background: #1a1a1a; cursor: pointer;
-            border-radius: 15px; color: white; font-size: 1.3rem; font-weight: bold;
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .card:focus, .card:hover { border-color: #ff0000; background: #333; outline: none; }
 
-        #video-player-container { 
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: #000; z-index: 100;
+        .movie-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            padding: 50px 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        /* Native video tag is better for old Android */
-        video { width: 100%; height: 100%; background: #000; }
-        
-        .close-btn { 
-            position: absolute; top: 15px; right: 15px; 
-            background: #ff0000; color: white; border: none; 
-            padding: 10px 20px; border-radius: 5px; z-index: 101;
+
+        .movie-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            background: #1a1a1a;
+        }
+
+        /* Video Player Overlay */
+        #video-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 9999;
+        }
+
+        video { width: 100%; height: 100%; outline: none; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--accent);
+            color: black; border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
         }
     </style>
 </head>
 <body>
 
-    <div id="home">
-        <h1>Movie Library</h1>
-        <div class="grid">
-            <button class="card" onclick="playNative('https://archive.org/details/soorarai-pottru-2020-hd')">MOVIE 1</button>
-            <button class="card" onclick="playNative('1JxG9gDuumNOFFMf0-fSZAp8jpkknoBrH')">MOVIE 2</button>
-            <button class="card" onclick="playNative('ID_3')">MOVIE 3</button>
-            <button class="card" onclick="playNative('ID_4')">MOVIE 4</button>
+    <h1>CLOUD<span>CINEMA</span></h1>
+
+    <div class="movie-grid">
+        <div class="movie-card" onclick="openStream('https://archive.org/details/soorarai-pottru-2020-hd')">
+            🎬 MOVIE 1 (Archive)
+        </div>
+
+        <div class="movie-card" onclick="openStream('https://drive.google.com/uc?export=download&id=17tCQAE6eeFs7esRpV-ul9lRujsg4bQfE')">
+            🎬 MOVIE 2 (Drive)
+        </div>
+
+        <div class="movie-card" onclick="openStream('YOUR_LINK_HERE')">
+            🎬 MOVIE 3
+        </div>
+
+        <div class="movie-card" onclick="openStream('YOUR_LINK_HERE')">
+            🎬 MOVIE 4
         </div>
     </div>
 
-    <div id="video-player-container">
-        <button class="close-btn" onclick="stopNative()">[X] CLOSE</button>
-        <video id="tv-video" controls autoplay>
+    <div id="video-overlay">
+        <button class="close-btn" onclick="closeStream()">BACK TO LIBRARY</button>
+        <video id="html5-player" controls preload="auto">
             <source id="video-source" src="" type="video/mp4">
-            Your TV browser is too old.
+            Your browser does not support high-quality playback.
         </video>
     </div>
 
     <script>
-        function playNative(id) {
-            var container = document.getElementById('video-player-container');
-            var video = document.getElementById('tv-video');
-            var source = document.getElementById('video-source');
-            
-            // Direct Link formula to bypass the Drive UI
-            // Note: If files are >100MB, you MUST be logged into Chrome on the TV
-            source.src = "https://drive.google.com/uc?export=download&id=" + id;
-            
-            container.style.display = 'block';
-            video.load();
-            video.play();
+        const overlay = document.getElementById('video-overlay');
+        const player = document.getElementById('html5-player');
+        const source = document.getElementById('video-source');
+
+        function openStream(url) {
+            source.src = url;
+            overlay.style.display = 'block';
+            player.load();
+            player.play();
         }
 
-        function stopNative() {
-            var video = document.getElementById('tv-video');
-            video.pause();
-            document.getElementById('video-player-container').style.display = 'none';
+        function closeStream() {
+            player.pause();
+            source.src = ""; // Clear source to save bandwidth
+            overlay.style.display = 'none';
         }
     </script>
 </body>
